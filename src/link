@@ -1,0 +1,143 @@
+#!/bin/bash
+if [[ $1 == "--help" ]];then
+	printf "\e[7mUse For:\e[0m\n\tlink a (directory, include-path or a library) with the project and Generate build-Files for\n\tand save there data in \e[1;35m'.dbg/prj.info'\e[0m\n"
+	printf "\e[7mThe How to Using:\e[0m\n\tskprj <-lk> [arguments]\n"
+	printf "\t\t    [\e[1;32m-f\e[0m:F_name] [\e[1;32m-l\e[0m:L_name] [\e[1;32m-i\e[0m:I_name]\n"
+	printf "\e[7mArgs:\e[0m\n"
+	printf "\t-f)\e[1;32mF_name\e[0m: linked source folder \e[1;30m:well generate a folder in '.dbg' include build-files\e[0m\n"
+	printf "\t-l)\e[1;32mL_name\e[0m: using a library that in \e[1;35m'/usr/lib(64)'\e[0m directory \e[1;30m:well add -l\"library\" to compile command\e[0m\n"
+	printf "\t-i)\e[1;32mI_name\e[0m: add include folder \e[1;30m:well add -I\"Folder\" to compile command\e[0m\n"
+	printf "\nThis Args can select by tags: \e[1;32m-f:for folder\e[0m, \e[1;32m-l:for static-library\e[0m, \e[1;32m-i:for include\e[0m\n"
+	printf "This program just edit the \e[1;35m'.dbg/prj.info'\e[0m file \e[1;33m\n\tif you face any problem edit is manually\e[0m\n"
+	return 5
+fi
+
+if [[ -z $SK_PRJ_NAME || $SK_PRJ_NAME == "-f" ]];then
+	if [[ -z $1 ]]; then
+		printf "project name:"
+		read SK_PRJ_NAME
+	else
+		SK_PRJ_NAME=$1
+		shift
+	fi
+fi
+
+linked_includes=$(grep "^includes:" "$SK_PRJ_NAME/.dbg/prj.info" | cut -d':' -f2-)
+linked_folders=$(grep "^folders:"  "$SK_PRJ_NAME/.dbg/prj.info" | cut -d':' -f2-)
+linked_lib=$(grep "^lib:"      "$SK_PRJ_NAME/.dbg/prj.info" | cut -d':' -f2-)
+
+geniratorF() {
+	export LINKED_FOLDER="$SK_PRJ_NAME/.dbg/$safe_name"
+	mkdir -p "$LINKED_FOLDER"
+	source "$SK_PRJ_MANAGER/res/generate_subdir_file" "$F_name/*.*" "$F_name" "./$safe_name" "./$LINKED_FOLDER/subdir.mk" " "
+}
+
+link_folder() {
+	if [[ -z $F_name ]]; then
+		printf "\e[1;31mError\e[0m: no folder specified. Use -f <folder>\n"
+		exit 1
+	fi
+	if [[ ! -d $F_name ]]; then
+		printf "\e[1;31mError\e[0m: the folder '$F_name' is not found\n"
+		exit 1
+	fi
+
+	safe_name=$(echo "$F_name" | tr '/' '_')
+
+	geniratorF
+
+	if [[ -f $SK_PRJ_NAME/.dbg/makefile ]]; then
+		if [[ ${linked_folders//\"/} != *${F_name//\"/}* ]];then
+			linked_folders+=" \"$F_name\" "
+		else
+			printf "\e[1;33mWarning\e[0m: this folder is already linked \n"
+		fi
+	else
+		printf "\e[1;31mError\e[0m: '$SK_PRJ_NAME/.dbg/makefile' not found! \n"
+	fi
+}
+
+link_lib() {
+	printf "\e[1;33mWarning\e[0m: there is no check for librarys names! \n"
+	if [[ -f $SK_PRJ_NAME/.dbg/makefile ]]; then
+		if [[ ${linked_lib//\"/} != *${L_name//\"/}* ]];then
+			linked_lib+=" -l$L_name "
+		else
+			printf "\e[1;33mWarning\e[0m: this library is already linked \n"
+		fi
+	else
+		printf "\e[1;31mError\e[0m: '$SK_PRJ_NAME/.dbg/makefile' not found! \n"
+	fi
+}
+
+folder_path_check() {
+	printf "give the path :"
+	read I_name
+	if [[ -d $I_name ]];then
+		link_include
+	else
+		echo "there is no folder AGAIN! with path '$I_name'"
+		folder_path_check
+	fi
+}
+
+link_include() {
+	if [[ -f $SK_PRJ_NAME/.dbg/subdir.mk ]]; then
+		if [[ -d $I_name ]];then
+			if [[ ${linked_includes//\"/} != *${I_name//\"/}* ]];then
+				linked_includes+=" -I$I_name "
+			else
+				printf "\e[1;33mWarning\e[0m: this path is already included \n"
+			fi
+		else
+			printf "\e[1;31mError\e[0m: the path '$I_name' No such file or directory! \n"
+			printf "\e[1;31myou can kill this process by\e[0m CTRL+C\n"
+			folder_path_check
+		fi
+	else
+		printf "\e[1;31mError\e[0m: '$SK_PRJ_NAME/.dbg/subdir.mk' not found! \n"
+	fi
+}
+
+while [[ $# -gt 0 ]]; do
+    arg="$1"
+    case "$arg" in
+        -f|--folder)
+            shift
+            F_name="$1"
+            link_folder
+            ;;
+        -f=*|--folder=*)
+            F_name="${arg#*=}"
+            link_folder
+            ;;
+        -l|--lib|--library)
+            shift
+            L_name="$1"
+            link_lib
+            ;;
+        -l=*|--lib=*|--library=*)
+            L_name="${arg#*=}"
+            link_lib
+            ;;
+        -i|--include)
+            shift
+            I_name="$1"
+            link_include
+            ;;
+        -i=*|--include=*)
+            I_name="${arg#*=}"
+            link_include
+            ;;
+        -*)
+            printf "\e[1;31mError\e[0m: Unknown option: $arg\n"
+            printf "select once of: \n\t-i\e[1;33m|\e[0m--include\n\t-l\e[1;33m|\e[0m--lib\e[1;33m|\e[0m--library\n\t-f\e[1;33m|\e[0m--folder\n"
+            exit 1
+            ;;
+    esac
+    shift
+done
+
+echo "lib:$linked_lib
+includes:$linked_includes
+folders:$linked_folders" > $SK_PRJ_NAME/.dbg/prj.info

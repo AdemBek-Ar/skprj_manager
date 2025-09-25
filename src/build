@@ -1,0 +1,34 @@
+#!/bin/bash
+if [[ $1 == "--help" ]];then
+	printf "\e[7mUse For:\e[0m\n\tbuilding the project and Generate the Makefile for\n"
+	printf "\e[7mThe How to Using:\e[0m\n\tskprj <build> [arguments]\n"
+	printf "\t\t      [\e[1;32m-n\e[0m:SK_PRJ_NAME\e[1;30m= exported-form:<new> by default\e[0m]\n"
+	printf "\e[7mArgs:\e[0m\n"
+	printf "\t1)\e[1;32mSK_PRJ_NAME\e[0m: the project name \e[1;30m:to control the project form workspace path\e[0m\n"
+	printf "\nIf you using this with no argument and '\$SK_PRJ_NAME' are not define: \e[1;32mit will ask you for a prj-name\e[0m\n"
+	return 5
+fi
+
+if [[ -z $1 ]]; then
+	if [[ -z $SK_PRJ_NAME ]];then
+		printf "project name:"
+		read SK_PRJ_NAME
+		if [[ -z SK_PRJ_NAME ]];then
+			SK_PRJ_NAME="."
+		fi
+	fi
+else
+	if [[ -z $SK_PRJ_NAME ]];then
+		SK_PRJ_NAME=$1
+		shift
+	fi
+fi
+
+
+
+cd $SK_PRJ_NAME
+if [[ -f "./.dbg/build" ]];then
+	bash ".dbg/build"
+else
+	bash "$SK_PRJ_MANAGER/res/default_build"
+fi

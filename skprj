@@ -1,0 +1,28 @@
+#!/bin/bash
+
+if [[ -z $1 ]];then
+	echo "you don't give any action to do, select one of those:"
+	ls $SK_PRJ_MANAGER/src
+	return -1
+fi
+
+
+srcs=$(ls $SK_PRJ_MANAGER/src)
+if [[ $1 == "--all-help" ]];then
+	echo "ALL Help"
+	for src in ${srcs[@]};do
+		printf "\e[7;36m<     $src     >                                                                                \e[0m\n"
+		source $SK_PRJ_MANAGER/src/$src --help
+	done
+	return 5
+fi
+
+for src in ${srcs[@]};do
+	if [[ $1 == $src ]];then
+		action=$1
+		shift
+		break
+	fi
+done
+
+source $SK_PRJ_MANAGER/src/$action $@

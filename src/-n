@@ -1,0 +1,19 @@
+#!/bin/bash
+if [[ $1 == "--help" ]];then
+	printf "\e[7mUse For:\e[0m\n\tcreate new files into project folder\n"
+	printf "\e[7mThe How to Using:\e[0m\n\tskprj <-n> [arguments]\n"
+	printf "\t\t   [...]\n"
+	printf "\e[7mArgs:\e[0m\n"
+	printf "\t*)\e[1;32mfiles names\e[0m: new files names \e[1;30m:create new files in prj-path\e[0m\n"
+	printf "if you using this with '\$SK_PRJ_NAME' not define: \e[1;32mit will ask you for a prj-name\e[0m\n"
+	return 5
+fi
+
+if [[ -z $SK_PRJ_NAME ]];then
+	printf "project name:"
+	read SK_PRJ_NAME
+fi
+
+for file in $@;do
+	touch $SK_PRJ_NAME/$file
+done

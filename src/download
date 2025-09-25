@@ -1,0 +1,11 @@
+#!/bin/bash
+if [[ $1 == "--help" ]];then
+	printf "\e[7mUse For:\e[0m\n\tDownload project files from Github using 'git'\n"
+	printf "\e[7mThe How to Using:\e[0m\n\tskprj <download> [arguments]\n"
+	printf "\t\t         [repo_name]\n"
+	printf "\e[7mArgs:\e[0m\n"
+	printf "\t1)\e[1;32mrepo_name\e[0m        : the URL_Path to the repositories\n"
+	printf "\nThat is no Args if that '.git' is not deleted, exsapte for '1)\e[1;32mclear_ansr\e[0m'\n"
+	printf "\nIf you using this with no argument and '\$SK_PRJ_NAME' are not define: \e[1;32mit will ask you for a prj-name\e[0m\n"
+	return 5
+fi

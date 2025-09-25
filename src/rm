@@ -1,0 +1,34 @@
+#!/bin/bash
+if [[ $1 == "--help" ]];then
+	printf "\e[7mUse For:\e[0m\n\tdelete the project\n"
+	printf "\e[7mThe How to Using:\e[0m\n\tskprj <rm> [arguments]\n"
+	printf "\t\t   [SK_PRJ_NAME\e[1;30m= exported-form:<new> by default\e[0m]\n"
+	printf "\e[7mArgs:\e[0m\n"
+	printf "\t1)\e[1;32mSK_PRJ_NAME\e[0m: project name \e[1;30m:delete the project with name '$SK_PRJ_NAME'\e[0m\n"
+	printf "\nIf you using this with '\$SK_PRJ_NAME' not define: \e[1;32mit will ask you for a prj-name\e[0m\n"
+	return 5
+fi
+
+deleted_prj=$SK_PRJ_NAME
+
+if [[ -z $SK_PRJ_NAME || ! -d $SK_PRJ_NAME ]];then
+	if [[ -z $1 ]]; then
+		echo "in prj-space folders :"
+		bash "$SK_PRJ_MANAGER/src/list"
+		printf "\nproject name:"
+		read deleted_prj
+	elif [[ ! -z $1 ]];then
+		deleted_prj=$1
+		shift
+	fi
+fi
+
+printf "the project \e[1;33m'$deleted_prj'\e[0m will \e[1;31mremoved\e[0m, are sure [Y/*]? :"
+read _sure_
+if [[ $_sure_ == "y" || $_sure_ == "Y" ]]; then
+	rm -rf $deleted_prj
+	printf "\e[1;33m'$deleted_prj'\e[0m have \e[1;31mdeleted\e[0m\n"
+	if [[ ! -z $1 ]];then
+		bash $SK_PRJ_MANAGER/src/rm $@
+	fi
+fi

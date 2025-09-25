@@ -1,0 +1,27 @@
+#!/bin/bash
+if [[ -z $SK_PRJ_NAME ]];then
+	if [[ -z $1 ]]; then
+		printf "project name:"
+		read SK_PRJ_NAME
+	else
+		SK_PRJ_NAME=$1
+		shift
+	fi
+fi
+
+mkdir -p $SK_PRJ_NAME $SK_PRJ_NAME/.dbg\
+ $SK_PRJ_NAME/.dbg/bin\
+ $SK_PRJ_NAME/.dbg/result
+
+echo "lib:
+include:
+folders:
+type:$SK_PRJ_TYPE" > $SK_PRJ_NAME/.dbg/prj.info
+
+if [[ ! -d "$SK_PRJ_MANAGER/res/templates/prj-type/$SK_PRJ_TYPE" ]];then
+	printf "\e[1;31mError\e[0m: There is no Type or Template call \"$SK_PRJ_TYPE\"\n"
+else
+	bash "$SK_PRJ_MANAGER/res/templates/prj-type/$SK_PRJ_TYPE/setup"
+fi
+
+tree -a $SK_PRJ_NAME

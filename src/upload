@@ -1,0 +1,64 @@
+#!/bin/bash
+cd $SK_PRJ_NAME
+
+if [[ $1 == "--help" ]];then
+	printf "\e[7mUse For:\e[0m\n\tUpload add project files into Github using 'git'\n"
+	printf "\e[7mThe How to Using:\e[0m\n\tskprj <upload> [arguments]\n"
+	printf "\t\t       [repo_name] [path_to_commit_rm] [clear_ansr]\n"
+	printf "\e[7mArgs:\e[0m\n"
+	printf "\t1)\e[1;32mrepo_name\e[0m        : the URL_Path to the repositories\n"
+	printf "\t2)\e[1;32mpath_to_commit_rm\e[0m: the \e[1;35mPath/to/commit.rm\e[0m or any file that contains the commit\n"
+	printf "\t3)\e[1;32mclear_ansr\e[0m       : if Clear/Delete \e[1;35mFolder('.git')\e[0m or Not\n"
+	printf "\nThat is no Args if that '.git' is not deleted, exsapte for '1)\e[1;32mclear_ansr\e[0m'\n"
+	return 5
+fi
+
+if [[ ! -d "./.git" ]];then
+	git init
+	if [[ -z $1 ]];then
+		printf "Give Repositories URL-Path: "
+		read repo_name
+	else
+		repo_name=$1
+		shift
+	fi
+	git remote add origin $repo_name
+	git add ./*
+	if [[ -z $1 ]];then
+		printf "Give a path to \e[1;35m'commit(.rm)'\e[0m file [*/n] :"
+		read path_to_commit_rm
+		if [[ $path_to_commit_rm != "N" && $path_to_commit_rm != "n" ]];then
+			git commit -m "$(cat $path_to_commit_rm)"
+		fi
+	else
+		git commit -m "$(cat $1)"
+		shift
+	fi
+	git push -u origin main
+else
+	git add ./*
+	if [[ -z $1 ]];then
+		printf "Give a path to \e[1;35m'commit(.rm)'\e[0m file [*/n] :"
+		read path_to_commit_rm
+		if [[ $path_to_commit_rm != "N" && $path_to_commit_rm != "n" ]];then
+			git commit -m "$(cat $path_to_commit_rm)"
+		fi
+	else
+		git commit -m "$(cat $1)"
+		shift
+	fi
+	git push
+fi
+
+
+if [[ -z $1 ]];then
+	printf "Do you want to clear the upload buffers \e[1;35m('.git' Folder)\e[0m [Y/*]"
+	read clear_ansr
+	if [[ $clear_ansr == "Y" || $clear_ansr == "y" ]];then
+		rm -rf "./.git"
+	fi
+else
+	if [[ $1 == "Y" || $1 == "y" ]];then
+		rm -rf "./.git"
+	fi
+fi

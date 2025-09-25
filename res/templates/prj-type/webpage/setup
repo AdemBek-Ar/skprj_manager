@@ -1,0 +1,11 @@
+#!/bin/bash
+rm -rf $SK_PRJ_NAME/.dbg/bin $SK_PRJ_NAME/.dbg/result $SK_PRJ_NAME/.dbg/prj.info
+touch $SK_PRJ_NAME/.dbg/prj.info
+
+cp $SK_PRJ_MANAGER/res/templates/files/index.html $SK_PRJ_NAME
+cp $SK_PRJ_MANAGER/res/templates/files/style.css  $SK_PRJ_NAME
+cp $SK_PRJ_MANAGER/res/templates/files/script.js  $SK_PRJ_NAME
+
+printf "give your browser name in terminal: "
+read browser_name
+printf "#\!/bin/bash\n$browser_name index.html" > $SK_PRJ_NAME/.dbg/run

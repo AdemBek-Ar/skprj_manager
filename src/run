@@ -1,0 +1,32 @@
+#!/bin/bash
+if [[ $1 == "--help" ]];then
+	printf "\e[1;30mthis script have to run after \e[1;33mskprj <build>\e[1;30m to Genetating the program\e[0m\n"
+	printf "\e[1;30mthis script can't apply for project that not generate an executable\e[0m\n"
+	printf "\e[7mUse For:\e[0m\n\trun the project from Generated compiled files\n"
+	printf "\e[7mThe How to Using:\e[0m\n\tskprj <run> [arguments]\n"
+	printf "\t\t      [program args\e[1;30m= the args that you may create in your program\e[0m]\n"
+	printf "\e[7mArgs:\e[0m\n"
+	printf "\t1)\e[1;32mSK_PRJ_NAME\e[0m: the project name \e[1;30m:to control the project form workspace path\e[0m\n"
+	printf "\nIf you using this with no argument and '\$SK_PRJ_NAME' are not define: \e[1;32mit will ask you for a prj-name\e[0m\n"
+	return 5
+fi
+
+if [[ -z $SK_PRJ_NAME ]];then
+	if [[ -z $1 ]]; then
+		printf "project name:"
+		read SK_PRJ_NAME
+		if [[ -z SK_PRJ_NAME ]];then
+			SK_PRJ_NAME="."
+		fi
+	else
+		SK_PRJ_NAME=$1
+		shift
+	fi
+fi
+
+cd $SK_PRJ_NAME
+if [[ -f "./.dbg/run" ]];then
+	bash ".dbg/run" $@
+else
+	./.dbg/result/app $@
+fi

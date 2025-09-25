@@ -1,0 +1,48 @@
+#!/bin/bash
+
+if [[ $1 == "--help" ]];then
+	printf "\e[1;30mhave to run this script with \e[1;33msource\e[1;30m to export the Variables\e[0m\n"
+	printf "\e[7mUse For:\e[0m\n\tset the project name\n"
+	printf "\e[7mThe How to Using:\e[0m\n\tskprj <name> [arguments]\n"
+	printf "\t\t      [\e[1;32m-n\e[0m:SK_PRJ_NAME\e[1;30m= exported-form:<new> by default\e[0m]\n"
+	printf "\e[7mArgs:\e[0m\n"
+	printf "\t1)\e[1;32mSK_PRJ_NAME\e[0m: the project name \e[1;30m:to control the project form workspace path\e[0m\n"
+	printf "\nThis Args can select by tags: \e[1;32m-s:for set\e[0m\n"
+	return 5
+fi
+
+if [[ $1 == "-s" ]];then
+	is_set='y'
+	shift
+fi
+
+if [[ -z $SK_PRJ_NAME && -z $1 ]];then
+	printf "\e[1;32mproject name\e[0m:"
+	read SK_PRJ_NAME
+	export SK_PRJ_NAME
+fi
+
+if [[ ! -z $is_set ]];then
+	if [[ -z $1 ]]; then
+		printf "\e[1;32mproject name\e[0m:"
+		read SK_PRJ_NAME
+		export SK_PRJ_NAME
+	fi
+	if [[ ! -d "$PWD/$1" ]];then
+		printf "There is no Folder with that name '$1' do you want to rename the old Folder '$SK_PRJ_NAME' [Y/*]: "
+		read rename_ansr
+		if [[ $rename_ansr == "Y" || $rename_ansr == "y" ]];then
+			mv $SK_PRJ_NAME $1
+		fi
+	fi
+	SK_PRJ_NAME=$1
+	export SK_PRJ_NAME
+else
+	echo $SK_PRJ_NAME
+fi
+
+if [[ ! -d "$PWD/$SK_PRJ_NAME" ]];then
+	printf "\e[1;31mThere is not such Folder in this path with name '$SK_PRJ_NAME'\e[0m\n\tyou have to create new project with:\n\tskprj <new> [project name] [project type=\e[1;30m '$SK_PRJ_TYPE'\e[0m]\n"
+	printf "\tor select one of $(bash $SK_PRJ_MANAGER/src/list)\n"
+	printf "\e[1;31mIf you change the name but it steel the old one make sure to run this script with '\e[1;33msource\e[1;31m'\e[0m\n"
+fi

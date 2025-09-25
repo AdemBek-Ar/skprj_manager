@@ -1,0 +1,15 @@
+#!/bin/bash
+
+if [[ -z $1 ]];then
+	bash "$SK_PRJ_MANAGER/res/name"
+	bash "$SK_PRJ_MANAGER/res/type"
+else
+	source "$SK_PRJ_MANAGER/res/name" -s $1
+	if [[ -z $2 ]];then
+		data_info="./$SK_PRJ_NAME/.dbg/prj.info"
+		prj_type_type=$(cat $data_info | grep "type:" | cut -d':' -f2-)
+		source "$SK_PRJ_MANAGER/res/type" -s $prj_type_type
+	else
+		source "$SK_PRJ_MANAGER/res/type" -s $2
+	fi
+fi
