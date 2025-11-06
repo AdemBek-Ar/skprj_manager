@@ -1,8 +1,0 @@
-#!/bin/bash
-
-cd ../
-bash "$SK_PRJ_MANAGER/res/build"
-cd $SK_PRJ_NAME/.dbg
-mkdir bin/nonezst
-make dbg
-rmdir bin/nonezst

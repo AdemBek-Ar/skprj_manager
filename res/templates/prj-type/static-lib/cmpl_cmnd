@@ -1,1 +1,0 @@
-ar rcs $name.a $(OBJS) $(USER_OBJS) $(LIBS)

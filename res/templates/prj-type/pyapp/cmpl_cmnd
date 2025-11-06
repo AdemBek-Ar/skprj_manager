@@ -1,1 +1,0 @@
-g++ -std=c++2c -o "result/app" $(OBJS) $(USER_OBJS) $(LIBS) -lpython3.13

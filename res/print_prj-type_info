@@ -1,7 +1,0 @@
-#!/bin/bash
-
-files=($SK_PRJ_MANAGER/res/templates/prj-type/*)
-for file in "${files[@]}"; do
-	printf "|---\e[1;36m$(basename "$file" .)\e[0m
-	:$(cat "$file"/for_what?)\n"
-done

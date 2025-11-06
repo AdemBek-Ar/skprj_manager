@@ -1,4 +1,0 @@
-from libc.stdlib cimport exit
-cdef public api int main():
-	
-	exit(0)
